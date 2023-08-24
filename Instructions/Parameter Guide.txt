@@ -1,0 +1,93 @@
+The parameters for this program are written in a json format, each will be explained below
+
+Example file:
+
+{"estimate_fits_image":600, "tolerance":0.0001, "sorting":true,
+  "max_iterations":20, "start":500, "stop":0,
+  "drift":"BEADS", "drift2":"DME",  "timebin":10, "zoom":2,"num_beads":2,
+   "drift_graphs":true, "bead_dist":200,
+  "CameraPixelSize":100, "roiRadius":5,
+  "cameraOffset": 100, "cameraEMGain":1, "cameraQE":0.95, "cameraConversionFactor":1,
+ "filenum":3, "frames":4000, "max_sigma":200, "max_localisation_precision":20, 
+"grouping_distance":50, "thresholding_sigmas":4 }   
+
+
+Estimate Fits Image: 
+The number of frames to use to estimate the fits image. This can cause memory allocation issues 
+if set too high and if it is too low
+
+Tolerance:
+The tolerance for the fitting (GPUfit) algorithm. The lower the tolerance the more accurate the fit will be
+
+Sorting:
+This is to choose if you want segmentation/sorting on all the cluster profiles at the end of the program once all the
+images have been analysed. This is useful if you want to see the distribution of the cluster profiles
+
+Max Iterations:
+The maximum number of iterations for the fitting algorithm. 
+The higher the number the more accurate the fit will be
+
+Start:
+The starting frame for the analysis, this is for discarding the first few frames
+if they are not needed for the analysis
+
+Stop:
+The last frame for the analysis, this is for discarding the last few frames
+if they are not needed for the analysis. If set to 0 then the program will discard no frames
+
+Drift:
+The drift correction method to use. The options are BEADS, RCC, DME, NONE.
+
+Drift2:
+This is an OPTIONAL parameter used for when beads is selected as the drift correction method
+but no beads have been detected by the program.
+
+Timebin:
+This is for RCC and DME and is the timebin to use for the drift correction
+
+Zoom:
+This is for RCC and DME and is the zoom to use for the drift correction
+
+Num Beads:
+This is used for beads to specify the expected number of beads per stack
+
+Bead Dist:
+This is used for beads to specify the expected distance between beads
+
+Drift Graphs:
+This is used to specify if you want to see the drift graphs for the drift correction methods
+
+roiRadius:
+This is the radius of the roi in pixels, this is used for localisation precision
+
+CameraPixelSize:
+This is the pixel size of the camera in nm
+
+
+
+cameraOffset, cameraEMGain, cameraQE, cameraConversionFactor:
+These are all camera parameters used for the intensity calculation into photons
+
+filenum:
+This is the number of image files to be analysed
+
+frames:
+This is the number of frames per image FOV and well, if split into multiple files then this is the aggregate number of frames
+
+max_sigma:
+This is the maximum sigma for the filtering process
+
+max_localisation_precision:
+This is the maximum localisation precision for the filtering process
+
+grouping_distance:
+This is the grouping distance for the filtering process
+
+thresholding_sigmas:
+This is the thresholding sigmas for the gathering of initial localisations
+
+
+
+
+
+

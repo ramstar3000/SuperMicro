@@ -1,0 +1,20 @@
+In order to run the program once you have downloaded it following the download guide.
+
+1. Run the program
+2. Enter the name of the directory that contains the images you want to process
+3. Make sure this directory also has a file called 'parameters.txt' that contains the parameters you want to use
+    a. If you need help with this there is a tool in the program that will help you to fill in this file
+        REFER to parameter guide
+4. Click run on the program
+5. Wait for the program to finish
+6. The program will create a new directory with all the processed images in it
+
+
+Trouble Shooting
+----------------
+
+- If the program terminates before it finishes it is likely that the parameters you have entered are not valid 
+    a common error is having the estimated number of fits per image too low which causes the program to terminate early
+
+
+
