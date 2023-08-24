@@ -1,0 +1,5 @@
+{"estimate_fits_image":200, "tolerance":100,
+  "max_iterations":15, "start":0, "stop":0,
+  "drift":"RCC", "timebin":19, "zoom":2,
+  "CameraPixelSize":100, "roiRadius":5,
+  "cameraOffset": 400, "cameraEMGain":100, "cameraQE":0.7, "cameraConversionFactor":1}   

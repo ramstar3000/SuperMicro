@@ -1,0 +1,16 @@
+GPU requirements
+
+For this project you need a compatible Nvidia GPU. In order to test if your GPU is compatible, run the following codes:
+
+- Download :
+- Run the exe and follow the instructions
+
+If you have a compatible GPU, you can install the program.
+
+If you don't have a compatible GPU, you can still run the program on your CPU, but will need to exchange the gpufit 
+for a different fitting program.
+
+If you have no GPU and want to use the program, please contact me and advice will be provided
+
+
+
