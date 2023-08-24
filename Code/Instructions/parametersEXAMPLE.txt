@@ -1,5 +1,7 @@
-{"estimate_fits_image":200, "tolerance":100,
-  "max_iterations":15, "start":0, "stop":0,
-  "drift":"RCC", "timebin":19, "zoom":2,
+ {"estimate_fits_image":600, "tolerance":0.0001, "sorting":false,
+  "max_iterations":20, "start":500, "stop":0,
+  "drift":"RCC",  "timebin":10, "zoom":2,"num_beads":2, "drift_graphs":true, "bead_dist":200
   "CameraPixelSize":100, "roiRadius":5,
-  "cameraOffset": 400, "cameraEMGain":100, "cameraQE":0.7, "cameraConversionFactor":1}   
+  "cameraOffset": 100, "cameraEMGain":1, "cameraQE":0.95, "cameraConversionFactor":1,
+ "filenum":27, "frames":4000, "max_sigma":200, "max_localisation_precision":20, 
+"grouping_distance":50, "thresholding_sigmas":4 } 
