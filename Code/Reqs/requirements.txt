@@ -9,5 +9,4 @@ tifffile==2023.4.12
 tqdm==4.65.0
 PySimpleGUI==4.55.1
 numba==0.57.1
-
-
+openpyxl==3.1.2
