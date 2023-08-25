@@ -30,10 +30,12 @@ def get_parameters(directory):
             hyperparameters['drift'] = DriftChoice.RCC
             hyperparameters['num_beads'] = None
             hyperparameters['drift2'] = None
+            hyperparameters['bead_dist'] = None
         elif a == "DME":
             hyperparameters['drift'] = DriftChoice.DME
             hyperparameters['num_beads'] = None
             hyperparameters['drift2'] = None
+            hyperparameters['bead_dist'] = None
 
         elif a == "BEADS":
             hyperparameters['drift'] = DriftChoice.BEADS
@@ -77,8 +79,6 @@ def update_images(stack, directory, nframes, fname):
 
     while len(stack) < nframes:
 
-        print(f"waiting {len(stack)}")
-
         # Check if new file with same initial
         fov_paths = gather_project_info(directory, p=False)
 
@@ -90,7 +90,7 @@ def update_images(stack, directory, nframes, fname):
                     exclude.append(image)
 
         if len(exclude) == 0:
-            time.sleep(7)
+            time.sleep(9)
             continue
 
         stack = io.imread(fname, plugin='tifffile')
@@ -102,7 +102,7 @@ def update_images(stack, directory, nframes, fname):
 
         if len(stack) != nframes:
 
-            time.sleep(4)
+            time.sleep(1)
 
     return stack, exclude
 

@@ -57,8 +57,6 @@ def main(fname, outdir, name, outpath, window, estimate_fits_image=100,  toleran
     getblob(stack, data, start_locations, initial_parameters,
             limits, chosen, stop=stop, start=start, num_sigmas=threshholding_sigmas)
 
-    print("Blobbed")
-
     b = time.time()
 
     window['output'].print(
@@ -238,7 +236,7 @@ def run_code(images, outdir, hyperparameters, window, directory):
                           hyperparameters['cameraEMGain'], hyperparameters['cameraQE'], hyperparameters['cameraConversionFactor'], hyperparameters['frames'],
                           1, hyperparameters['max_sigma'], hyperparameters['max_localisation_precision'], hyperparameters['grouping_distance'], hyperparameters['thresholding_sigmas'])
 
-        window['output'].print(f"Finished {i + 1} out of {num_files} files")
+        window['output'].print(f"Finished {i + 1 + len(new_fnames)} out of {num_files} files")
 
         i += 1
 
@@ -250,6 +248,8 @@ def run_code(images, outdir, hyperparameters, window, directory):
         for image in to_add:
 
             images.append(image)
+
+        
 
     window['output'].print(outpath)
 
@@ -267,8 +267,8 @@ def run_code(images, outdir, hyperparameters, window, directory):
 if __name__ == "__main__":
 
     # Remove warnings from numpy, activate for debugging
-    # np.seterr(divide='ignore', invalid='ignore')
-    # np.set_printoptions(suppress=True)
+    np.seterr(divide='ignore', invalid='ignore')
+    np.set_printoptions(suppress=True)
     pd.options.mode.chained_assignment = None
 
     directory = get_directory()

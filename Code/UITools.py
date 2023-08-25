@@ -27,7 +27,8 @@ def get_directory():
               [Psg.Text("For example: X1Y1R1W1C1.tiff")],
               [Psg.Text(
                   "Please make sure parameters.txt is in the same directory as the images.")],
-                [Psg.Text("Optional: If you want sorting please provide the plate.xlsx file in the same directory, this must have a sheet called locations.")],            
+                [Psg.Text("""Optional: If you want sorting please provide the plate.xlsx file in the same directory, 
+                          this must have a sheet called locations.""")],            
               [Psg.Button("Help with parameters.txt")],
               [Psg.Multiline(" ", key="Help", visible=False, size=(50, 20))],
               [Psg.OK()],]
