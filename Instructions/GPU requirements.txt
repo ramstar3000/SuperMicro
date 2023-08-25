@@ -2,8 +2,8 @@ GPU requirements
 
 For this project you need a compatible Nvidia GPU. In order to test if your GPU is compatible, run the following codes:
 
-- Download :
-- Run the exe and follow the instructions
+- Download the latest of gpufit from https://github.com/gpufit/Gpufit/releases
+- Run the exe to test your GPU in /Gpuperformance  and follow the instructions
 
 If you have a compatible GPU, you can install the program.
 
