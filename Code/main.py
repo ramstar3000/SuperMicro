@@ -30,7 +30,7 @@ def main(fname, outdir, name, outpath, window, estimate_fits_image=100,  toleran
          start=0,  stop=0, drift=DriftChoice.NONE, num_beads=None, bead_dist=150 ,timebin=10, zoom=10, drift2=None, drift_graph=False, CameraPixelSize=100, SRPixelSize=10,
          roiRadius=5, cameraOffset=400, cameraEMGain=100, cameraQE=0.7, cameraConversionFactor=1, nframes=7000,
          sigmaMultiplier=1, max_sigma=160, max_localisation_precision=10, grouping_distance=25, threshholding_sigmas=4, eps=75.0, min_sample=2,
-         reconstruction=True, clustering=True, groupingt=True):
+         reconstructiont=True, clusteringt=True, groupingt=True):
 
     s = time.time()
 
@@ -166,7 +166,7 @@ def main(fname, outdir, name, outpath, window, estimate_fits_image=100,  toleran
     path_result_fid = os.path.dirname(outdir)
 
 
-    if reconstruction:
+    if reconstructiont:
         zoom = int(CameraPixelSize / SRPixelSize)
         size = (int(size_x * CameraPixelSize / zoom),
                 int(size_y * CameraPixelSize / zoom))
@@ -208,7 +208,7 @@ def main(fname, outdir, name, outpath, window, estimate_fits_image=100,  toleran
 
     # Cluster the localisations
 
-    if clustering:
+    if clusteringt:
 
         cluster_DBSCAN(name, outpath, pixel_size=CameraPixelSize,
                    dimensions=dimensions, path_result_fid=path_result_fid, eps=eps, min_sample=min_sample, df=x, scale = int(CameraPixelSize/SRPixelSize))
