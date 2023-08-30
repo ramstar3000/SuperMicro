@@ -6,10 +6,11 @@ Example file:
   "max_iterations":20, "start":500, "stop":0,
   "drift":"BEADS", "drift2":"DME",  "timebin":10, "zoom":2,"num_beads":2,
    "drift_graphs":true, "bead_dist":200,
-  "CameraPixelSize":100, "roiRadius":5,
+  "CameraPixelSize":100, "roiRadius":5, "SRPixelSize":10,
   "cameraOffset": 100, "cameraEMGain":1, "cameraQE":0.95, "cameraConversionFactor":1,
  "filenum":3, "frames":4000, "max_sigma":200, "max_localisation_precision":20, 
-"grouping_distance":50, "thresholding_sigmas":4 }   
+"grouping_distance":50, "thresholding_sigmas":4,
+"clustering":true, "reconstruction":false, "grouping":true }   
 
 
 Estimate Fits Image: 
@@ -63,7 +64,8 @@ This is the radius of the roi in pixels, this is used for localisation precision
 CameraPixelSize:
 This is the pixel size of the camera in nm
 
-
+SMPixelSize:
+This is the pixel size of the SR image in nm?
 
 cameraOffset, cameraEMGain, cameraQE, cameraConversionFactor:
 These are all camera parameters used for the intensity calculation into photons
@@ -85,6 +87,19 @@ This is the grouping distance for the filtering process
 
 thresholding_sigmas:
 This is the thresholding sigmas for the gathering of initial localisations
+
+clustering:
+This is used to specify if you want to use clustering. default is true
+
+reconstruction:
+This is used to specify if you want to use reconstruction. default is true
+
+grouping:
+This is used to specify if you want to use grouping. default is true
+
+"""
+
+"""
 
 
 
