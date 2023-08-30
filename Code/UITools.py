@@ -81,7 +81,7 @@ def main_menu():
     layout = [
         [Psg.Multiline(key="output", size=(50, 10),
                        disabled=True, autoscroll=True)],
-        [Psg.OK(button_color=('black', "#E3242B"))],
+        [Psg.Cancel(button_color=('black', "#E3242B"))],
     ]
 
     window = Psg.Window("Main Menu", layout,

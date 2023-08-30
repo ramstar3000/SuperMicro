@@ -65,16 +65,16 @@ def cluster_DBSCAN(field_name, file_dir, pixel_size, dimensions, eps=75.0, min_s
         return report
 
     labels = clustering.labels_
-    n_clusters, n_noise = extract_labels(labels)
+    n_clusters, _ = extract_labels(labels)
 
     # Label the localisations in the df with cluster ids
 
-    labelled_df = df
-    labelled_df['DBSCAN_label'] = labels  # Q
+    df = df
+    df['DBSCAN_label'] = labels  # Q
 
     # Remove localisations labelled as noise from the df
-    cleaned_df = labelled_df
-    cleaned_df = labelled_df[labelled_df.DBSCAN_label != -1]
+    df = df
+    df = df[df.DBSCAN_label != -1]
 
     # Save cleaned cluster localisation file
 
@@ -82,8 +82,8 @@ def cluster_DBSCAN(field_name, file_dir, pixel_size, dimensions, eps=75.0, min_s
     if n_clusters != 0:
 
         # # Magnify the coordinates
-        cleaned_df['X_mag'] = (cleaned_df['X'] * scale).astype('int16')
-        cleaned_df['Y_mag'] = (cleaned_df['Y'] * scale).astype('int16')
+        df['X_mag'] = (df['X'] * scale).astype('int16')
+        df['Y_mag'] = (df['Y'] * scale).astype('int16')
 
         # Creates a dataframe contains all the pixel localisations
         placeholder = pd.DataFrame({
@@ -95,14 +95,14 @@ def cluster_DBSCAN(field_name, file_dir, pixel_size, dimensions, eps=75.0, min_s
 
         # These lines consume a lot a time. Need to find a way to speed up
 
-        cluster_df = cleaned_df
-        cluster_df['DBSCAN_label'] += 1  # Change label from 0-based to 1-based
+        df = df
+        df['DBSCAN_label'] += 1  # Change label from 0-based to 1-based
         # Combine placeholder with actual dataframe
-        cluster_df = pd.concat([cluster_df, placeholder],
+        df = pd.concat([df, placeholder],
                                axis=0, join='outer', sort=False)
         
 
-        cluster_df3 = cluster_df.groupby(['Y_mag', 'X_mag'])['DBSCAN_label'].max().unstack(fill_value=0)
+        cluster_df3 = df.groupby(['Y_mag', 'X_mag'])['DBSCAN_label'].max().unstack(fill_value=0)
         cluster_img =  np.nan_to_num(cluster_df3.to_numpy(dtype=np.int16))  # convert pivot table to numpy array
         
 
@@ -113,16 +113,26 @@ def cluster_DBSCAN(field_name, file_dir, pixel_size, dimensions, eps=75.0, min_s
 
         cluster_profile = pd.DataFrame(cluster_profile)
 
-        n_localisation = cleaned_df.groupby(['DBSCAN_label'])['id'].count()
+        n_localisation = df.groupby(['DBSCAN_label'])['id'].count()
         cluster_profile['n_localisation'] = n_localisation
 
         cluster_profile.columns = [
             'cluster_id', 'area',  'major_axis_length', 'eccentricity',  'n_localisation']
 
+
+        # Magnify the coordinates to correct units
+
+        cluster_profile['area'] = cluster_profile['area'] * scale ** 2
+        cluster_profile['major_axis_length'] = cluster_profile['major_axis_length'] * scale
+
+
+        # Delete any NaNs
+        cluster_profile = cluster_profile.dropna()
+        
+
         # Save cluster profile file
         cluster_profile.to_csv(os.path.join(
             path_result_fid, field_name+'_clusterProfile_' + str(eps) + '_' + str(min_sample) + '.csv'))
-
 
 @jit(target_backend='cuda', nopython=True)
 def extract_labels(labels):

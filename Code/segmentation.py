@@ -76,8 +76,13 @@ def Sorter(folderPath, path_to_plates):
 
                 s += len(df)
 
+    
+
     df = pd.concat(all_dfs)
 
     titles2 = ["FOV"] + titles2
+
+    # Remove all the NaNs
+    df.dropna(inplace=True)
 
     df.to_string(folderPath + "//" + "all_data.txt", index=False, columns = titles2 )

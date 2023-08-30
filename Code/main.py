@@ -7,9 +7,11 @@ import os
 from datetime import datetime
 from PIL import Image
 from numba.typed import List as nlist
+import warnings
 
 from json.decoder import JSONDecodeError
 from Estimator import getblob
+
 
 import PySimpleGUI as Psg
 
@@ -25,9 +27,10 @@ from UITools import get_directory, main_menu, error_message
 
 
 def main(fname, outdir, name, outpath, window, estimate_fits_image=100,  tolerance=1e-2, max_number_iterations=15,
-         start=0,  stop=0, drift=DriftChoice.NONE, num_beads=None, bead_dist=150 ,timebin=10, zoom=10, drift2=None, drift_graph=False, CameraPixelSize=100,
+         start=0,  stop=0, drift=DriftChoice.NONE, num_beads=None, bead_dist=150 ,timebin=10, zoom=10, drift2=None, drift_graph=False, CameraPixelSize=100, SRPixelSize=10,
          roiRadius=5, cameraOffset=400, cameraEMGain=100, cameraQE=0.7, cameraConversionFactor=1, nframes=7000,
-         sigmaMultiplier=1, max_sigma=160, max_localisation_precision=10, grouping_distance=25, threshholding_sigmas=4):
+         sigmaMultiplier=1, max_sigma=160, max_localisation_precision=10, grouping_distance=25, threshholding_sigmas=4, eps=75.0, min_sample=2,
+         reconstruction=True, clustering=True, groupingt=True):
 
     s = time.time()
 
@@ -88,7 +91,7 @@ def main(fname, outdir, name, outpath, window, estimate_fits_image=100,  toleran
     window['output'].print(f"{c - b :.2f} s for GpuFit | ", end="")
     
 
-        #### 1.1 Localisation precision ####
+    #### 1.1 Localisation precision ####
 
 
 
@@ -151,38 +154,45 @@ def main(fname, outdir, name, outpath, window, estimate_fits_image=100,  toleran
 
     window['output'].print(f"{g - p :.2f} s for drift | ", end="")
 
-    chosen = grouping(chosen, estimate_fits_image, max_dist=grouping_distance)
+    if groupingt:
+        chosen = grouping(chosen, estimate_fits_image, max_dist=grouping_distance)
 
     ############################
 
     #### 3   Reconstruction   ####
-    zoom = 10
-    size = (int(size_x * CameraPixelSize / zoom),
-            int(size_y * CameraPixelSize / zoom))
-    imageSR_proc = np.zeros(size, dtype=np.float32)
 
-    l = 10
-    startrows = chosen[:, 2] / 10 - 5
-    startrows[startrows < 0] = 0
-    startrows = startrows.astype(int)
-
-    startcols = chosen[:, 3] / 10 - 5
-    startcols[startcols < 0] = 0
-    startcols = startcols.astype(int)
-
-    imageSR_proc =  reconstruction(chosen, startrows, startcols, l,
-                   zoom, imageSR_proc, sigmaMultiplier)
     
+
+    path_result_fid = os.path.dirname(outdir)
+
+
+    if reconstruction:
+        zoom = int(CameraPixelSize / SRPixelSize)
+        size = (int(size_x * CameraPixelSize / zoom),
+                int(size_y * CameraPixelSize / zoom))
+        imageSR_proc = np.zeros(size, dtype=np.float32)
+
+        l = 10
+        startrows = chosen[:, 2] / 10 - 5
+        startrows[startrows < 0] = 0
+        startrows = startrows.astype(int)
+
+        startcols = chosen[:, 3] / 10 - 5
+        startcols[startcols < 0] = 0
+        startcols = startcols.astype(int)
+
+        imageSR_proc =  reconstruction(chosen, startrows, startcols, l,
+                    zoom, imageSR_proc, sigmaMultiplier)
+
+        im = Image.fromarray(imageSR_proc)
+        im.save(os.path.join(path_result_fid, f'{name}_reconstruction.tif'))
 
     c = time.time()
     window['output'].print(f"{c - g :.2f} s for reconstruction | ", end="")
 
-    path_result_fid = os.path.dirname(outdir)
-
-    im = Image.fromarray(imageSR_proc)
-    im.save(os.path.join(path_result_fid, f'{name}_reconstruction.tif'))
 
     ############################
+    
 
     x = pd.DataFrame(chosen)
     x.columns = ["Frame No", "Intensity", "x [nm]",
@@ -198,8 +208,10 @@ def main(fname, outdir, name, outpath, window, estimate_fits_image=100,  toleran
 
     # Cluster the localisations
 
-    cluster_DBSCAN(name, outpath, pixel_size=CameraPixelSize,
-                   dimensions=dimensions, path_result_fid=path_result_fid, eps=75.0, min_sample=2, df=x)
+    if clustering:
+
+        cluster_DBSCAN(name, outpath, pixel_size=CameraPixelSize,
+                   dimensions=dimensions, path_result_fid=path_result_fid, eps=eps, min_sample=min_sample, df=x, scale = int(CameraPixelSize/SRPixelSize))
 
     ############################
 
@@ -232,9 +244,10 @@ def run_code(images, outdir, hyperparameters, window, directory):
         new_fnames = main(image, outpath, name, outpath, window, hyperparameters['estimate_fits_image'], hyperparameters['tolerance'],
                           hyperparameters['max_iterations'], hyperparameters['start'], hyperparameters['stop'], hyperparameters['drift'],
                           hyperparameters['num_beads'], hyperparameters['bead_dist'] ,hyperparameters['timebin'], hyperparameters['zoom'], hyperparameters['drift2'], hyperparameters['drift_graphs'],
-                          hyperparameters['CameraPixelSize'],hyperparameters['roiRadius'], hyperparameters['cameraOffset'],
+                          hyperparameters['CameraPixelSize'], hyperparameters['SRPixelSize'] , hyperparameters['roiRadius'], hyperparameters['cameraOffset'],
                           hyperparameters['cameraEMGain'], hyperparameters['cameraQE'], hyperparameters['cameraConversionFactor'], hyperparameters['frames'],
-                          1, hyperparameters['max_sigma'], hyperparameters['max_localisation_precision'], hyperparameters['grouping_distance'], hyperparameters['thresholding_sigmas'])
+                          1, hyperparameters['max_sigma'], hyperparameters['max_localisation_precision'], hyperparameters['grouping_distance'], hyperparameters['thresholding_sigmas'],
+                          hyperparameters['eps'], hyperparameters['min_sample'], hyperparameters['reconstruction'], hyperparameters['clustering'], hyperparameters['grouping'])
 
         window['output'].print(f"Finished {i + 1 + len(new_fnames)} out of {num_files} files")
 
@@ -255,6 +268,10 @@ def run_code(images, outdir, hyperparameters, window, directory):
 
     if hyperparameters['sorting']:
 
+        if not hyperparameters['clustering']:
+            error_message("Clustering must be on to sort the results", 2)
+            exit()
+
         window['output'].print("Sorting the results")
         
         try:
@@ -263,6 +280,8 @@ def run_code(images, outdir, hyperparameters, window, directory):
             error_message(str(e) + "All other files have been saved", 2)
             exit()
 
+    window['output'].print("Done, please close the window")
+
 
 if __name__ == "__main__":
 
@@ -270,6 +289,9 @@ if __name__ == "__main__":
     np.seterr(divide='ignore', invalid='ignore')
     np.set_printoptions(suppress=True)
     pd.options.mode.chained_assignment = None
+
+    # Turn off all warnings
+    warnings.filterwarnings("ignore")
 
     directory = get_directory()
 
@@ -310,5 +332,5 @@ if __name__ == "__main__":
             a.start()
             flag = False
 
-        if event == Psg.WIN_CLOSED or event == "OK":
+        if event == Psg.WIN_CLOSED or event == "OK" or event == "Cancel":
             break

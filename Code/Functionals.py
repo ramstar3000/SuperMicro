@@ -47,6 +47,19 @@ def get_parameters(directory):
             hyperparameters['num_beads'] = None
             hyperparameters['drift2'] = None
 
+    if "min_sample" not in hyperparameters.keys():
+        hyperparameters['min_sample'] = 100
+        hyperparameters['eps'] = 2
+
+    if "grouping" not in hyperparameters.keys():
+        hyperparameters['grouping'] = True
+    
+    if "clustering" not in hyperparameters.keys():
+        hyperparameters['clustering'] = True
+
+    if "reconstruction" not in hyperparameters.keys():
+        hyperparameters['reconstruction'] = True
+
     return hyperparameters
 
 
